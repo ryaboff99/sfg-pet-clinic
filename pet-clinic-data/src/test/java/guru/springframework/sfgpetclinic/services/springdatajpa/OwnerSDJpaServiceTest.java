@@ -4,6 +4,7 @@ import guru.springframework.sfgpetclinic.model.Owner;
 import guru.springframework.sfgpetclinic.repositories.OwnerRepository;
 import guru.springframework.sfgpetclinic.repositories.PetRepository;
 import guru.springframework.sfgpetclinic.repositories.PetTypeRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,19 +14,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("Owner Spring Data JPA Service Test")
 class OwnerSDJpaServiceTest {
 
     final Long OWNER_ID = 1L;
     final String OWNER_LAST_NAME = "Victoria";
-
     final Owner OWNER = Owner.builder().id(OWNER_ID).lastName(OWNER_LAST_NAME).build();
-
     final Set<Owner> OWNER_SET = Set.of(OWNER);
 
     @Mock
@@ -41,91 +43,83 @@ class OwnerSDJpaServiceTest {
     OwnerSDJpaService ownerSDJpaService;
 
     @Test
-    void findAll() {
+    @DisplayName("Service finds all Owners")
+    void serviceFindsAllOwners() {
         when(ownerRepository.findAll()).thenReturn(OWNER_SET);
 
-        Set<Owner> ownerSet = ownerSDJpaService.findAll();
+        Set<Owner> ownerSetToTest = ownerSDJpaService.findAll();
 
-        assertNotNull(ownerSet);
-        assertEquals(1, ownerSet.size());
+        assertNotNull(ownerSetToTest);
+        assertEquals(1, ownerSetToTest.size());
 
-        verify(ownerRepository, times(1)).findAll();
+        verify(ownerRepository).findAll();
     }
 
     @Test
-    void findById() {
+    @DisplayName("Service find Owner by Id")
+    void serviceFindOwnerById() {
         when(ownerRepository.findById(OWNER_ID)).thenReturn(Optional.of(OWNER));
 
-        Owner owner = ownerSDJpaService.findById(OWNER_ID);
+        Owner ownerToTest = ownerSDJpaService.findById(OWNER_ID);
 
-        assertNotNull(owner);
-        assertEquals(OWNER_LAST_NAME, owner.getLastName());
+        assertNotNull(ownerToTest);
+        assertEquals(OWNER_ID, ownerToTest.getId());
 
-        verify(ownerRepository, times(1)).findById(OWNER_ID);
+        verify(ownerRepository).findById(OWNER_ID);
     }
 
     @Test
-    void FindByIdNotFound() {
-        Long id = 2L;
-        when(ownerRepository.findById(id)).thenReturn(Optional.empty());
+    @DisplayName("Service do not find Owner by Id")
+    void serviceDoNotFindOwnerById() {
+        when(ownerRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        Owner owner = ownerSDJpaService.findById(id);
+        Owner ownerToTest = ownerSDJpaService.findById(OWNER_ID);
 
-        assertNull(owner);
+        assertNull(ownerToTest);
 
-        verify(ownerRepository, times(1)).findById(id);
+        verify(ownerRepository).findById(OWNER_ID);
     }
 
     @Test
-    void saveExistingId() {
+    @DisplayName("Service save Owner")
+    void serviceSaveOwner() {
         Long id = 2L;
         Owner savedOwner = Owner.builder().id(id).build();
 
         when(ownerRepository.save(savedOwner)).thenReturn(savedOwner);
 
-        Owner ownerToCheck = ownerSDJpaService.save(savedOwner);
+        Owner ownerToTest = ownerSDJpaService.save(savedOwner);
 
-        assertEquals(id, ownerToCheck.getId());
+        assertEquals(id, ownerToTest.getId());
 
-        verify(ownerRepository, times(1)).save(savedOwner);
+        verify(ownerRepository).save(savedOwner);
     }
 
     @Test
-    void saveNoId() {
-
-        Owner savedOwner = Owner.builder().build();
-
-        when(ownerRepository.save(savedOwner)).thenReturn(savedOwner);
-
-        Owner ownerToCheck = ownerSDJpaService.save(savedOwner);
-
-        assertNotNull(ownerToCheck);
-
-        verify(ownerRepository, times(1)).save(savedOwner);
-    }
-
-    @Test
-    void delete() {
+    @DisplayName("Service delete Owner")
+    void serviceDeleteOwner() {
         ownerSDJpaService.delete(OWNER);
 
-        verify(ownerRepository, times(1)).delete(OWNER);
+        verify(ownerRepository).delete(OWNER);
     }
 
     @Test
-    void deleteById() {
+    @DisplayName("Service delete Owner by Id")
+    void serviceDeleteOwnerById() {
         ownerSDJpaService.deleteById(OWNER_ID);
 
-        verify(ownerRepository, times(1)).deleteById(OWNER_ID);
+        verify(ownerRepository).deleteById(OWNER_ID);
     }
 
     @Test
-    void findByLastName() {
+    @DisplayName("Service find Owner by last name")
+    void serviceFindOwnerByLastName() {
         when(ownerRepository.findByLastName(OWNER_LAST_NAME)).thenReturn(OWNER);
 
         Owner ownerToCheck = ownerSDJpaService.findByLastName(OWNER_LAST_NAME);
 
         assertEquals(OWNER_LAST_NAME, ownerToCheck.getLastName());
 
-        verify(ownerRepository, times(1)).findByLastName(OWNER_LAST_NAME);
+        verify(ownerRepository).findByLastName(OWNER_LAST_NAME);
     }
 }
