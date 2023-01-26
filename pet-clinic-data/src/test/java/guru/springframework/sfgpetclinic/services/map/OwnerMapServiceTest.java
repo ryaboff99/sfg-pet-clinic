@@ -2,12 +2,16 @@ package guru.springframework.sfgpetclinic.services.map;
 
 import guru.springframework.sfgpetclinic.model.Owner;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
+@DisplayName("Owner Map Service Test")
 class OwnerMapServiceTest {
 
     OwnerMapService ownerMapService;
@@ -17,65 +21,73 @@ class OwnerMapServiceTest {
     @BeforeEach
     void setUp() {
         ownerMapService = new OwnerMapService(new PetTypeMapService(), new PetMapService());
-        ownerMapService.save(Owner.builder().id(1L).lastName(LAST_NAME).build());
+        ownerMapService.save(Owner.builder().id(OWNER_ID).lastName(LAST_NAME).build());
     }
 
     @Test
-    void findAll() {
-        Set<Owner> ownerSet = ownerMapService.findAll();
+    @DisplayName("Service find all Owners")
+    void serviceFindAllOwners() {
+        Set<Owner> ownerSetToTest = ownerMapService.findAll();
 
-        assertEquals(1, ownerSet.size());
+        assertEquals(1, ownerSetToTest.size());
     }
 
     @Test
-    void findById() {
-        Owner owner = ownerMapService.findById(OWNER_ID);
+    @DisplayName("Service find Owner by Id")
+    void serviceFindOwnerById() {
+        Owner ownerToTest = ownerMapService.findById(OWNER_ID);
 
-        assertEquals(1L, owner.getId());
+        assertEquals(OWNER_ID, ownerToTest.getId());
     }
 
     @Test
-    void saveExistingId() {
+    @DisplayName("Service save Owner with existing Id")
+    void serviceSaveOwnerWithExistingId() {
         Long id = 2L;
-        Owner savedOwner = ownerMapService.save(Owner.builder().id(id).build());
+        Owner ownerToTest = ownerMapService.save(Owner.builder().id(id).build());
 
-        assertEquals(2L, savedOwner.getId());
+        assertEquals(id, ownerToTest.getId());
     }
 
     @Test
-    void saveNoId() {
-        Owner savedOwner = ownerMapService.save(Owner.builder().build());
+    @DisplayName("Service save Owner without Id")
+    void serviceSaveOwnerWithoutId() {
+        Owner ownerToTest = ownerMapService.save(Owner.builder().build());
 
-        assertNotNull(savedOwner);
-        assertNotNull(savedOwner.getId());
+        assertNotNull(ownerToTest);
+        assertNotNull(ownerToTest.getId());
     }
 
     @Test
-    void delete() {
+    @DisplayName("Service delete Owner")
+    void serviceDeleteOwner() {
         ownerMapService.delete(ownerMapService.findById(OWNER_ID));
 
         assertEquals(0, ownerMapService.findAll().size());
     }
 
     @Test
-    void deleteById() {
+    @DisplayName("Service delete Owner by Id")
+    void serviceDeleteOwnerById() {
         ownerMapService.deleteById(OWNER_ID);
 
         assertEquals(0, ownerMapService.findAll().size());
     }
 
     @Test
-    void findByLastName() {
-        Owner mike = ownerMapService.findByLastName(LAST_NAME);
+    @DisplayName("Service find Owner by last name")
+    void serviceFindOwnerByLastName() {
+        Owner ownerToTest = ownerMapService.findByLastName(LAST_NAME);
 
-        assertNotNull(mike);
-        assertEquals(OWNER_ID, mike.getId());
+        assertNotNull(ownerToTest);
+        assertEquals(OWNER_ID, ownerToTest.getId());
     }
 
     @Test
-    void findByLastNameNotFound() {
-        Owner foo = ownerMapService.findByLastName("foo");
+    @DisplayName("Service do not find Owner by last name")
+    void serviceDoNotfindOwnerByLastName() {
+        Owner ownerToTest = ownerMapService.findByLastName("foo");
 
-        assertNull(foo);
+        assertNull(ownerToTest);
     }
 }
