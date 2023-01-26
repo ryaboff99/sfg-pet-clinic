@@ -1,35 +1,75 @@
 package guru.springframework.sfgpetclinic.services.map;
 
+import guru.springframework.sfgpetclinic.model.Owner;
 import guru.springframework.sfgpetclinic.model.PetType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@DisplayName("PetType Map Service Test")
 class PetTypeMapServiceTest {
 
+    PetTypeMapService petTypeMapService;
+    final Long PET_TYPE_ID = 1L;
+
+    @BeforeEach
+    void setUp() {
+        petTypeMapService = new PetTypeMapService();
+        petTypeMapService.save(PetType.builder().id(PET_TYPE_ID).build());
+    }
+
     @Test
-    void testPetType() {
-        PetType petType1 = new PetType();
-        petType1.setName("petType1");
-        PetType petType2 = new PetType();
-        petType2.setName("petType2");
-        PetType petType3 = new PetType();
-        petType3.setName("petType3");
-        PetType petType4 = new PetType();
-        petType4.setName("petType4");
+    @DisplayName("Service find all PetTypes")
+    void serviceFindAllPetTypes() {
+        Set<PetType> petTypeSetToTest = petTypeMapService.findAll();
 
-        PetTypeMapService petTypeMapService1 = new PetTypeMapService();
-        petTypeMapService1.save(petType1);
-        petTypeMapService1.save(petType2);
+        assertEquals(1, petTypeSetToTest.size());
+    }
 
+    @Test
+    @DisplayName("Service find PetType by Id")
+    void serviceFindPetTypeById() {
+        PetType petTypeToTest = petTypeMapService.findById(PET_TYPE_ID);
 
-        PetTypeMapService petTypeMapService2 = new PetTypeMapService();
-        petTypeMapService2.save(petType3);
-        petTypeMapService2.save(petType4);
+        assertEquals(PET_TYPE_ID, petTypeToTest.getId());
+    }
 
-        System.out.println("111");
-        petTypeMapService1.findAll().stream().forEach(System.out::println);
-        System.out.println("222");
-        petTypeMapService2.findAll().stream().forEach(System.out::println);
+    @Test
+    @DisplayName("Service save PetType with existing Id")
+    void serviceSavePetTypeWithExistingId() {
+        Long id = 2L;
+        PetType petTypeToTest = petTypeMapService.save(PetType.builder().id(id).build());
+
+        assertEquals(id, petTypeToTest.getId());
+    }
+
+    @Test
+    @DisplayName("Service save PetType without Id")
+    void serviceSavePetTypeWithoutId() {
+        PetType petTypeToTest = petTypeMapService.save(PetType.builder().build());
+
+        assertNotNull(petTypeToTest);
+        assertNotNull(petTypeToTest.getId());
+    }
+
+    @Test
+    @DisplayName("Service delete PetType")
+    void serviceDeletePetType() {
+        petTypeMapService.delete(petTypeMapService.findById(PET_TYPE_ID));
+
+        assertEquals(0, petTypeMapService.findAll().size());
+    }
+
+    @Test
+    @DisplayName("Service delete PetType by Id")
+    void serviceDeletePetTypeById() {
+        petTypeMapService.deleteById(PET_TYPE_ID);
+
+        assertEquals(0, petTypeMapService.findAll().size());
     }
 }
