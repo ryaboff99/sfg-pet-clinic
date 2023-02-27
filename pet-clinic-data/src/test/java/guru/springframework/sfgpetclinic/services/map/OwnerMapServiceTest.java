@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,9 +86,18 @@ class OwnerMapServiceTest {
 
     @Test
     @DisplayName("Service do not find Owner by last name")
-    void serviceDoNotfindOwnerByLastName() {
+    void serviceDoNotFindOwnerByLastName() {
         Owner ownerToTest = ownerMapService.findByLastName("foo");
 
         assertNull(ownerToTest);
+    }
+
+    @Test
+    void serviceFindAllOwnersByLastNameLike() {
+        ownerMapService.save(Owner.builder().id(2L).lastName("Ger").build());
+
+        List<Owner> filteredList = ownerMapService.findAllByLastNameLike("Ger");
+
+        assertEquals(1, filteredList.size());
     }
 }

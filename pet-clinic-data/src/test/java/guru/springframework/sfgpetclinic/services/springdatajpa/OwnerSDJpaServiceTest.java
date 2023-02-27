@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,8 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Owner Spring Data JPA Service Test")
@@ -121,5 +121,19 @@ class OwnerSDJpaServiceTest {
         assertEquals(OWNER_LAST_NAME, ownerToCheck.getLastName());
 
         verify(ownerRepository).findByLastName(OWNER_LAST_NAME);
+    }
+
+    @Test
+    void findAllByLastNameLike() {
+        List<Owner> ownerList = List.of(Owner.builder().id(1L).build(),
+                Owner.builder().id(2L).build());
+
+        when(ownerRepository.findAllByLastNameLike(OWNER_LAST_NAME)).thenReturn(ownerList);
+
+        List<Owner> ownerListToCheck = ownerSDJpaService.findAllByLastNameLike(OWNER_LAST_NAME);
+
+        assertEquals(2, ownerListToCheck.size());
+
+        verify(ownerRepository, times(1)).findAllByLastNameLike(OWNER_LAST_NAME);
     }
 }
