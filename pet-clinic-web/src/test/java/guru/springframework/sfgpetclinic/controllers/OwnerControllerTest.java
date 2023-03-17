@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
+//TODO: define paths as constants
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Owner Controller Test")
 class OwnerControllerTest {
